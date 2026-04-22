@@ -6,7 +6,7 @@ Plateforme d'entraide academique collaborative avec gamification. Les utilisateu
 
 | Service | URL |
 |---------|-----|
-| Frontend | [https://pre-hackversebrainstorm.vercel.app](https://pre-hackversebrainstorm.vercel.app) |
+| Frontend | [https://pre-hackverse-brainstorm.vercel.app/#/feed](https://pre-hackverse-brainstorm.vercel.app/#/feed) |
 | Backend API | [https://pre-hackverse-brainstorm.onrender.com/api](https://pre-hackverse-brainstorm.onrender.com/api) |
 
 ## ✨ Fonctionnalités principales
