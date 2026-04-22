@@ -54,7 +54,7 @@ const FeedPage = () => {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-dark-900">Questions</h1>
           <p className="text-dark-500 mt-1">
@@ -67,12 +67,16 @@ const FeedPage = () => {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              Nouvelle question
+              <span className="hidden sm:inline">Nouvelle question</span>
+              <span className="sm:hidden">Poser</span>
             </Button>
           </Link>
         ) : (
           <Link to="/auth/login">
-            <Button>Se connecter pour poser</Button>
+            <Button>
+              <span className="hidden sm:inline">Se connecter pour poser</span>
+              <span className="sm:hidden">Se connecter</span>
+            </Button>
           </Link>
         )}
       </div>
@@ -144,7 +148,7 @@ const FeedPage = () => {
 
       {/* Pagination */}
       {totalPages > 1 && !isLoading && (
-        <div className="flex items-center justify-center gap-3">
+        <div className="flex flex-wrap items-center justify-center gap-3">
           <Button
             variant="secondary"
             disabled={page <= 1 || isFetching}

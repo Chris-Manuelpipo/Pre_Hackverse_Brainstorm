@@ -55,7 +55,7 @@ const QuestionFilters = ({ filters = {}, onFilterChange }) => {
           options={sortOptions}
           value={filters.sort || 'recent'}
           onValueChange={(v) => onFilterChange('sort', v)}
-          className="w-40"
+          className="w-full sm:w-40"
         />
 
         {/* Statut */}
@@ -63,7 +63,7 @@ const QuestionFilters = ({ filters = {}, onFilterChange }) => {
           options={statutOptions}
           value={filters.statut || ''}
           onValueChange={(v) => onFilterChange('statut', v)}
-          className="w-36"
+          className="w-full sm:w-36"
         />
 
         {/* Type */}
@@ -71,7 +71,7 @@ const QuestionFilters = ({ filters = {}, onFilterChange }) => {
           options={typeOptions}
           value={filters.type_contenu || ''}
           onValueChange={(v) => onFilterChange('type_contenu', v)}
-          className="w-40"
+          className="w-full sm:w-40"
         />
 
         {/* Bouton filtres avancés */}
@@ -80,6 +80,7 @@ const QuestionFilters = ({ filters = {}, onFilterChange }) => {
           size="sm"
           onClick={() => setIsOpen(!isOpen)}
           type="button"
+          className="w-full sm:w-auto"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -88,10 +89,10 @@ const QuestionFilters = ({ filters = {}, onFilterChange }) => {
           {hasActiveFilters && <span className="w-2 h-2 bg-accent-500 rounded-full" />}
         </Button>
 
-        <div className="flex-1" />
+        <div className="hidden sm:block flex-1" />
 
         {hasActiveFilters && (
-          <Button variant="ghost" size="sm" onClick={handleClear} type="button">
+          <Button variant="ghost" size="sm" onClick={handleClear} type="button" className="w-full sm:w-auto">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -108,7 +109,7 @@ const QuestionFilters = ({ filters = {}, onFilterChange }) => {
               options={matiereOptions}
               value={filters.matiere || ''}
               onValueChange={(v) => onFilterChange('matiere', v)}
-              className="w-48"
+              className="w-full sm:w-48"
             />
           </div>
         </div>

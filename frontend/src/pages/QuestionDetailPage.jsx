@@ -117,7 +117,7 @@ const QuestionDetailPage = () => {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-dark-500">
+      <nav className="flex flex-wrap items-center gap-2 text-sm text-dark-500">
         <Link to="/feed" className="hover:text-primary-600">Feed</Link>
         <span>/</span>
         {question.matiere_nom && (
@@ -130,8 +130,8 @@ const QuestionDetailPage = () => {
       </nav>
 
       {/* Question */}
-      <article className="card p-6">
-        <div className="flex gap-4">
+      <article className="card p-4 sm:p-6">
+        <div className="flex gap-3 sm:gap-4">
           <div className="hidden sm:block">
             <VoteButtons
               score={question.score ?? 0}
@@ -159,7 +159,7 @@ const QuestionDetailPage = () => {
             </div>
 
             {/* Titre */}
-            <h1 className="text-2xl font-display font-bold text-dark-900 mb-4">{question.titre}</h1>
+            <h1 className="text-xl sm:text-2xl font-display font-bold text-dark-900 mb-4">{question.titre}</h1>
 
             {/* Description */}
             <div className="prose prose-sm max-w-none text-dark-700 whitespace-pre-wrap">
@@ -167,8 +167,8 @@ const QuestionDetailPage = () => {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-between mt-6 pt-4 border-t border-dark-100">
-              <div className="flex items-center gap-4 text-sm text-dark-500">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mt-6 pt-4 border-t border-dark-100">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-sm text-dark-500">
                 <span>{question.nb_vues ?? 0} vues</span>
                 <span>
                   {formatDistanceToNow(new Date(question.date_creation), { addSuffix: true, locale: fr })}
@@ -235,7 +235,7 @@ const QuestionDetailPage = () => {
       </div>
 
       {/* Formulaire de réponse */}
-      <div className="card p-6">
+      <div className="card p-4 sm:p-6">
         <h3 className="font-semibold text-dark-900 mb-4">Votre réponse</h3>
         {isAuthenticated ? (
           <form onSubmit={handleSubmitReponse}>
@@ -246,12 +246,13 @@ const QuestionDetailPage = () => {
               rows={8}
               className="mb-4 font-mono text-sm"
             />
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs text-dark-400">Markdown supporté</p>
               <Button
                 type="submit"
                 loading={submitMutation.isPending}
                 disabled={!newReponse.trim() || newReponse.trim().length < 10}
+                className="w-full sm:w-auto"
               >
                 Publier la réponse
               </Button>

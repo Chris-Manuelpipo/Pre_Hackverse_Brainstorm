@@ -95,7 +95,7 @@ const QuestionCard = ({ question }) => {
           )}
 
           {/* Footer */}
-          <div className="flex items-center justify-between mt-3 pt-3 border-t border-dark-100">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mt-3 pt-3 border-t border-dark-100">
             <div className="flex items-center gap-2 text-xs text-dark-500">
               <span className="sm:hidden">{score} votes · </span>
               <span>{vues} vues</span>
@@ -113,7 +113,7 @@ const QuestionCard = ({ question }) => {
               className="flex items-center gap-2 hover:bg-dark-50 p-1 -m-1 rounded-lg transition-colors"
             >
               <Avatar src={avatar} alt={pseudo} size="xs" level={niveau} />
-              <span className="text-sm text-dark-600">{pseudo}</span>
+              <span className="text-sm text-dark-600 max-w-[11rem] truncate">{pseudo}</span>
             </Link>
           </div>
         </div>

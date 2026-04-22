@@ -105,6 +105,13 @@ const Header = () => {
                     Poser
                   </Button>
                 </Link>
+                <Link to="/questions/new" className="sm:hidden">
+                  <Button variant="primary" size="sm" className="!px-2.5" aria-label="Poser une question">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  </Button>
+                </Link>
 
                 {/* Notifications */}
                 <div className="relative" ref={notifRef}>
@@ -125,7 +132,7 @@ const Header = () => {
 
                   {/* Dropdown notifications */}
                   {showNotifications && (
-                    <div className="absolute right-0 mt-2 w-80 bg-[var(--surface-elevated)] rounded-2xl border border-dark-200 shadow-xl overflow-hidden">
+                    <div className="absolute right-0 mt-2 w-[min(20rem,calc(100vw-1rem))] bg-[var(--surface-elevated)] rounded-2xl border border-dark-200 shadow-xl overflow-hidden">
                       <div className="flex items-center justify-between px-4 py-3 border-b border-dark-100">
                         <h3 className="font-semibold text-dark-900">Notifications</h3>
                         {unreadCount > 0 && (
@@ -174,7 +181,7 @@ const Header = () => {
                   </button>
 
                   {showUserMenu && (
-                    <div className="absolute right-0 mt-2 w-52 bg-[var(--surface-elevated)] rounded-2xl border border-dark-200 shadow-xl overflow-hidden">
+                    <div className="absolute right-0 mt-2 w-[min(13rem,calc(100vw-1rem))] bg-[var(--surface-elevated)] rounded-2xl border border-dark-200 shadow-xl overflow-hidden">
                       <div className="px-4 py-3 border-b border-dark-100">
                         <p className="font-medium text-dark-900">{user?.pseudo}</p>
                         <p className="text-xs text-dark-400">{user?.email}</p>
