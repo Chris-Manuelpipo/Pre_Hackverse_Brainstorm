@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import useAuthStore from './store/authStore';
@@ -35,8 +35,8 @@ function AppLayout({ children }) {
     <div className="app-shell min-h-screen flex flex-col">
       <Header />
       <div className="app-shell__backdrop" aria-hidden="true" />
-      <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 relative z-10">
-        <div className="flex gap-8 items-start">{children}</div>
+      <div className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 relative z-10">
+        <div className="flex gap-4 lg:gap-8 items-start">{children}</div>
       </div>
       <Footer />
     </div>
@@ -73,7 +73,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
-        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <AuthInit />
           <ThemeInit />
           <Routes>
@@ -117,7 +117,7 @@ function App() {
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/feed" replace />} />
           </Routes>
-        </BrowserRouter>
+        </HashRouter>
       </ToastProvider>
     </QueryClientProvider>
   );
