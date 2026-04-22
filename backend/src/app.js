@@ -24,10 +24,42 @@ const app = express();
 
 // ── Sécurité & Utilitaires ────────────────────────────────────────────────────
 app.use(helmet());
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'],
+const configuredOrigins = [
+  process.env.CLIENT_URL,
+  process.env.FRONTEND_URL,
+  process.env.FRONTEND_ORIGIN,
+]
+  .filter(Boolean)
+  .map((o) => o.trim());
+
+const allowedOrigins = new Set([
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:5173',
+  ...configuredOrigins,
+]);
+
+const corsOptions = {
+  origin(origin, callback) {
+    // Autorise les clients sans Origin (curl, health checks, server-to-server)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.has(origin)) {
+      return callback(null, true);
+    }
+
+    // Autorise les previews/déploiements Vercel
+    if (/^https:\/\/[a-zA-Z0-9-]+\.vercel\.app$/.test(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`Not allowed by CORS: ${origin}`));
+  },
   credentials: true,
-}));
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(compression());
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json({ limit: '10mb' }));

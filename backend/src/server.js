@@ -3,12 +3,6 @@ const app  = require('./app');
 const { initSocket } = require('./socket');
 
 const PORT = process.env.PORT || 5000;
-// backend - server.js ou index.js
-const cors = require('cors');
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true
-}));
 const server = http.createServer(app);
 
 // Initialisation WebSocket (Socket.io)
