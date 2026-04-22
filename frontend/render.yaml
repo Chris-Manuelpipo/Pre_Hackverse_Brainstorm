@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: entraide-frontend
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm run preview
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://pre-hackverse-brainstorm.onrender.com/api
