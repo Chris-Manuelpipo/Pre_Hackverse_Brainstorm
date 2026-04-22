@@ -7,7 +7,7 @@ import VoteButtons from './VoteButtons';
 /**
  * ReponseCard — adapté aux données réelles du backend.
  * Le backend renvoie : auteur_pseudo, auteur_avatar, auteur_id, auteur_niveau,
- * contenu, est_acceptee, score, user_vote, date_creation.
+ * contenu, est_acceptee, score_votes, user_vote/mon_vote, date_creation.
  */
 const ReponseCard = ({ reponse, isAuthor, onAccept, onVote, questionId }) => {
   // Support des deux formats (mock et API)
@@ -15,8 +15,8 @@ const ReponseCard = ({ reponse, isAuthor, onAccept, onVote, questionId }) => {
   const avatar  = reponse.auteur_avatar || reponse.auteur?.avatar_url || null;
   const auteurId = reponse.auteur_id || reponse.auteur?.id;
   const niveau  = reponse.auteur_niveau || reponse.auteur?.niveau || 1;
-  const score   = reponse.score ?? reponse.votes ?? 0;
-  const userVote = reponse.user_vote ?? null;
+  const score   = reponse.score_votes ?? reponse.score ?? reponse.votes ?? 0;
+  const userVote = reponse.user_vote ?? reponse.mon_vote ?? null;
   const createdAt = reponse.date_creation || reponse.created_at;
 
   return (

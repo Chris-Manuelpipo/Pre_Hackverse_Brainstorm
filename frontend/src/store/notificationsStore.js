@@ -9,8 +9,13 @@ const useNotificationsStore = create((set, get) => ({
   fetchUnreadCount: async () => {
     try {
       const data = await notificationsApi.getUnreadCount();
-      set({ unreadCount: data.count ?? 0 });
-    } catch {/* silencieux */}
+      const count = data?.count ?? 0;
+      set({ unreadCount: count });
+      return count;
+    } catch {
+      set({ unreadCount: 0 });
+      return 0;
+    }
   },
 
   fetchNotifications: async () => {

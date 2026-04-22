@@ -102,8 +102,8 @@ const ProfilePage = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <StatCard label="Questions" value={profile.nb_questions ?? profile.questions?.length ?? 0} color="text-primary-600" />
         <StatCard label="Réponses" value={profile.nb_reponses} color="text-accent-600" />
-        <StatCard label="Solutions" value={profile.nb_solutions} color="text-green-600" />
-        <StatCard label="XP" value={profile.xp ?? profile.nb_votes_recus ?? 0} color="text-yellow-600" />
+        <StatCard label="Solutions" value={profile.nb_solutions_acceptees ?? profile.nb_solutions} color="text-green-600" />
+        <StatCard label="XP" value={profile.points_xp ?? profile.xp ?? profile.nb_votes_recus ?? 0} color="text-yellow-600" />
       </div>
 
       {/* Badges */}

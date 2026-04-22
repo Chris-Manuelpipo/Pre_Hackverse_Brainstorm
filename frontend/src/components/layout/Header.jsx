@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import useAuthStore from '../../store/authStore';
 import useNotificationsStore from '../../store/notificationsStore';
+import useThemeStore from '../../store/themeStore';
 import { Avatar, Button } from '../ui';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -10,6 +11,7 @@ import { fr } from 'date-fns/locale';
 const Header = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuthStore();
+  const { theme, toggleTheme } = useThemeStore();
   const { unreadCount, notifications, fetchUnreadCount, fetchNotifications, markAllRead } = useNotificationsStore();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -49,14 +51,15 @@ const Header = () => {
   };
 
   const notifTypeLabel = {
-    reponse_new: '💬',
-    vote: '👍',
-    solution: '✅',
+    nouvelle_reponse: '💬',
+    commentaire: '💬',
+    solution_acceptee: '✅',
+    upvote: '👍',
     badge: '🏆',
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-dark-200">
+    <header className="sticky top-0 z-50 bg-[var(--header-bg)] backdrop-blur-xl border-b border-[var(--header-border)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo */}
@@ -73,6 +76,24 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-2 ml-auto">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="relative p-2 rounded-xl hover:bg-dark-100 transition-colors"
+              aria-label={theme === 'dark' ? 'Activer le mode clair' : 'Activer le mode sombre'}
+              title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
+            >
+              {theme === 'dark' ? (
+                <svg className="w-5 h-5 text-dark-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v2m0 14v2m7-9h2M3 12H1m15.364 6.364l1.414 1.414M6.222 6.222L4.808 4.808m12.728 0-1.414 1.414M6.222 17.778l-1.414 1.414M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 text-dark-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9 9 0 008.354-5.646z" />
+                </svg>
+              )}
+            </button>
+
             {isAuthenticated ? (
               <>
                 {/* Nouvelle question */}
@@ -104,7 +125,7 @@ const Header = () => {
 
                   {/* Dropdown notifications */}
                   {showNotifications && (
-                    <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl border border-dark-200 shadow-xl overflow-hidden">
+                    <div className="absolute right-0 mt-2 w-80 bg-[var(--surface-elevated)] rounded-2xl border border-dark-200 shadow-xl overflow-hidden">
                       <div className="flex items-center justify-between px-4 py-3 border-b border-dark-100">
                         <h3 className="font-semibold text-dark-900">Notifications</h3>
                         {unreadCount > 0 && (
@@ -153,7 +174,7 @@ const Header = () => {
                   </button>
 
                   {showUserMenu && (
-                    <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl border border-dark-200 shadow-xl overflow-hidden">
+                    <div className="absolute right-0 mt-2 w-52 bg-[var(--surface-elevated)] rounded-2xl border border-dark-200 shadow-xl overflow-hidden">
                       <div className="px-4 py-3 border-b border-dark-100">
                         <p className="font-medium text-dark-900">{user?.pseudo}</p>
                         <p className="text-xs text-dark-400">{user?.email}</p>

@@ -99,7 +99,10 @@ async function findByQuestion(question_id, userId) {
       );
       const voteMap = {};
       votes.rows.forEach(v => { voteMap[v.reponse_id] = v.valeur; });
-      rows.forEach(r => { r.mon_vote = voteMap[r.id] || null; });
+      rows.forEach(r => {
+        r.mon_vote = voteMap[r.id] || null;
+        r.user_vote = r.mon_vote;
+      });
     }
   }
 

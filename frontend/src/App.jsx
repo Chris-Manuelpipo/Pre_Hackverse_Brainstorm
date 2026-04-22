@@ -12,6 +12,7 @@ import NewQuestionPage from './pages/NewQuestionPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
+import useThemeStore from './store/themeStore';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,10 +32,11 @@ function PrivateRoute({ element }) {
 
 function AppLayout({ children }) {
   return (
-    <div className="min-h-screen flex flex-col bg-dark-50">
+    <div className="app-shell min-h-screen flex flex-col">
       <Header />
-      <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex gap-8">{children}</div>
+      <div className="app-shell__backdrop" aria-hidden="true" />
+      <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 relative z-10">
+        <div className="flex gap-8 items-start">{children}</div>
       </div>
       <Footer />
     </div>
@@ -43,7 +45,8 @@ function AppLayout({ children }) {
 
 function AuthLayout({ children }) {
   return (
-    <div className="min-h-screen flex flex-col bg-dark-50">
+    <div className="app-shell app-shell--auth min-h-screen flex flex-col">
+      <div className="app-shell__backdrop" aria-hidden="true" />
       {children}
     </div>
   );
@@ -58,12 +61,21 @@ function AuthInit() {
   return null;
 }
 
+function ThemeInit() {
+  const { initTheme } = useThemeStore();
+  useEffect(() => {
+    initTheme();
+  }, [initTheme]);
+  return null;
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
-        <BrowserRouter>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <AuthInit />
+          <ThemeInit />
           <Routes>
             {/* Auth Routes */}
             <Route path="/auth/login"    element={<AuthLayout><LoginPage /></AuthLayout>} />

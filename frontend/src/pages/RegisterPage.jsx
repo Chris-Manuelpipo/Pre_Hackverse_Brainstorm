@@ -74,7 +74,7 @@ const RegisterPage = () => {
               error={errors.password?.message}
               {...register('password', {
                 required: 'Mot de passe obligatoire',
-                minLength: { value: 6, message: 'Au moins 6 caractères' },
+                minLength: { value: 8, message: 'Au moins 8 caractères' },
               })}
             />
 

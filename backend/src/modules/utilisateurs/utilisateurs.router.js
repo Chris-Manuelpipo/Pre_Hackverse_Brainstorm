@@ -60,12 +60,17 @@ router.delete('/me/matieres/:matiereId', authenticate, async (req, res) => {
   res.status(204).end();
 });
 
-// ── GET /api/users/:pseudo ───────────────────────────────────────────────────
-// Profil public (APRÈS /me pour éviter le conflit)
-router.get('/:pseudo', async (req, res) => {
+// ── GET /api/users/:pseudoOrId ─────────────────────────────────────────────────
+// Profil public - accepte pseudo OU id numérique
+router.get('/:pseudoOrId', async (req, res) => {
+  const { pseudoOrId } = req.params;
+  const isNumeric = /^\d+$/.test(pseudoOrId);
+  
   const { rows } = await db.query(
-    'SELECT * FROM v_profil_utilisateur WHERE pseudo = $1',
-    [req.params.pseudo]
+    isNumeric
+      ? 'SELECT * FROM v_profil_utilisateur WHERE id = $1'
+      : 'SELECT * FROM v_profil_utilisateur WHERE pseudo = $1',
+    [pseudoOrId]
   );
   if (!rows[0]) {
     return res.status(404).json({ error: 'Utilisateur introuvable.' });

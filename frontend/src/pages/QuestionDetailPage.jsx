@@ -150,7 +150,7 @@ const QuestionDetailPage = () => {
                   {question.matiere_nom}
                 </Badge>
               )}
-              <Badge variant={question.statut === 'résolu' ? 'success' : question.statut === 'fermé' ? 'error' : 'primary'}>
+              <Badge variant={question.statut === 'resolu' ? 'success' : question.statut === 'fermé' ? 'error' : 'primary'}>
                 {question.statut}
               </Badge>
               {Array.isArray(question.tags) && question.tags.filter(Boolean).map((tag, i) => (

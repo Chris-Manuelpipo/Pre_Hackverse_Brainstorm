@@ -47,7 +47,7 @@ const Sidebar = () => {
                 <p className="text-xs text-dark-500">Réponses</p>
               </div>
               <div className="bg-dark-50 rounded-lg p-2">
-                <p className="text-lg font-bold text-success-600">{user.nb_solutions ?? user.solutions ?? 0}</p>
+                <p className="text-lg font-bold text-success-600">{user.nb_solutions_acceptees ?? user.nb_solutions ?? user.solutions ?? 0}</p>
                 <p className="text-xs text-dark-500">Solutions</p>
               </div>
             </div>

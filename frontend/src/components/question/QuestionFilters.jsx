@@ -5,15 +5,22 @@ import { referentielApi } from '../../api/referentiel.api';
 
 const sortOptions = [
   { value: 'recent', label: 'Plus récent' },
-  { value: 'votes', label: 'Plus votés' },
+  { value: 'votes', label: 'Plus répondus' },
   { value: 'vues', label: 'Plus vus' },
 ];
 
 const statutOptions = [
   { value: '', label: 'Tous les statuts' },
   { value: 'ouvert', label: 'Ouvert' },
-  { value: 'résolu', label: 'Résolu' },
-  { value: 'fermé', label: 'Fermé' },
+  { value: 'resolu', label: 'Résolu' },
+  { value: 'ferme', label: 'Fermé' },
+];
+
+const typeOptions = [
+  { value: '', label: 'Tous les types' },
+  { value: 'exercice', label: 'Exercice' },
+  { value: 'comprehension', label: 'Compréhension' },
+  { value: 'ressources', label: 'Ressources' },
 ];
 
 const QuestionFilters = ({ filters = {}, onFilterChange }) => {
@@ -31,11 +38,12 @@ const QuestionFilters = ({ filters = {}, onFilterChange }) => {
     ...matieres.map((m) => ({ value: m.nom, label: `${m.icone || ''} ${m.nom}` })),
   ];
 
-  const hasActiveFilters = filters.statut || filters.matiere;
+  const hasActiveFilters = filters.statut || filters.matiere || filters.type_contenu;
 
   const handleClear = () => {
     onFilterChange('statut', '');
     onFilterChange('matiere', '');
+    onFilterChange('type_contenu', '');
     onFilterChange('sort', 'recent');
   };
 
@@ -46,7 +54,7 @@ const QuestionFilters = ({ filters = {}, onFilterChange }) => {
         <Select
           options={sortOptions}
           value={filters.sort || 'recent'}
-          onChange={(v) => onFilterChange('sort', v)}
+          onValueChange={(v) => onFilterChange('sort', v)}
           className="w-40"
         />
 
@@ -54,8 +62,16 @@ const QuestionFilters = ({ filters = {}, onFilterChange }) => {
         <Select
           options={statutOptions}
           value={filters.statut || ''}
-          onChange={(v) => onFilterChange('statut', v)}
+          onValueChange={(v) => onFilterChange('statut', v)}
           className="w-36"
+        />
+
+        {/* Type */}
+        <Select
+          options={typeOptions}
+          value={filters.type_contenu || ''}
+          onValueChange={(v) => onFilterChange('type_contenu', v)}
+          className="w-40"
         />
 
         {/* Bouton filtres avancés */}
@@ -91,7 +107,7 @@ const QuestionFilters = ({ filters = {}, onFilterChange }) => {
             <Select
               options={matiereOptions}
               value={filters.matiere || ''}
-              onChange={(v) => onFilterChange('matiere', v)}
+              onValueChange={(v) => onFilterChange('matiere', v)}
               className="w-48"
             />
           </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { questionsApi } from '../../api/questions.api';
@@ -9,18 +10,20 @@ import { useDebounce } from '../../hooks/useDebounce';
 import { Button, Input, Textarea, Select } from '../ui';
 
 const typeOptions = [
-  { value: 'question', label: 'Question' },
   { value: 'exercice', label: 'Exercice' },
-  { value: 'aide', label: "Demande d'aide" },
+  { value: 'comprehension', label: 'Question de compréhension' },
+  { value: 'ressources', label: 'Demande de ressources' },
 ];
 
 const niveauOptions = [
   { value: '', label: 'Tous les niveaux' },
-  { value: 'L1', label: 'L1' },
-  { value: 'L2', label: 'L2' },
-  { value: 'L3', label: 'L3' },
-  { value: 'M1', label: 'M1' },
-  { value: 'M2', label: 'M2' },
+  { value: 'L1', label: 'L1 - Licence 1' },
+  { value: 'L2', label: 'L2 - Licence 2' },
+  { value: 'L3', label: 'L3 - Licence 3' },
+  { value: 'M1', label: 'M1 - Master 1' },
+  { value: 'M2', label: 'M2 - Master 2' },
+  { value: ' Prépa', label: 'Prépa' },
+  { value: 'BTS', label: 'BTS' },
 ];
 
 const QuestionForm = () => {
@@ -31,7 +34,7 @@ const QuestionForm = () => {
   const [duplicates, setDuplicates] = useState([]);
   const [showDuplicates, setShowDuplicates] = useState(false);
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm();
+  const { register, control, handleSubmit, watch, formState: { errors } } = useForm();
   const titre = watch('titre', '');
   const debouncedTitre = useDebounce(titre, 600);
 
@@ -69,7 +72,7 @@ const QuestionForm = () => {
       questionsApi.create({
         titre:        data.titre,
         description:  data.description,
-        type_contenu: data.type || 'question',
+        type_contenu: data.type || 'comprehension',
         matiere_id:   data.matiere_id ? parseInt(data.matiere_id) : undefined,
         niveau_etudes: data.niveau || undefined,
         tags,
@@ -103,23 +106,51 @@ const QuestionForm = () => {
       <div className="card p-6 space-y-4">
         <h2 className="font-semibold text-dark-900">1. Informations de base</h2>
 
-        <Select
-          label="Type de publication"
-          options={typeOptions}
-          {...register('type', { required: 'Veuillez sélectionner un type' })}
+        <Controller
+          name="type"
+          control={control}
+          rules={{ required: 'Veuillez sélectionner un type' }}
+          render={({ field }) => (
+            <Select
+              label="Type de publication"
+              options={typeOptions}
+              value={field.value}
+              onValueChange={field.onChange}
+              onBlur={field.onBlur}
+              name={field.name}
+            />
+          )}
         />
         {errors.type && <p className="text-sm text-red-600">{errors.type.message}</p>}
 
-        <Select
-          label="Matière"
-          options={matiereOptions}
-          {...register('matiere_id')}
+        <Controller
+          name="matiere_id"
+          control={control}
+          render={({ field }) => (
+            <Select
+              label="Matière"
+              options={matiereOptions}
+              value={field.value}
+              onValueChange={field.onChange}
+              onBlur={field.onBlur}
+              name={field.name}
+            />
+          )}
         />
 
-        <Select
-          label="Niveau"
-          options={niveauOptions}
-          {...register('niveau')}
+        <Controller
+          name="niveau"
+          control={control}
+          render={({ field }) => (
+            <Select
+              label="Niveau"
+              options={niveauOptions}
+              value={field.value}
+              onValueChange={field.onChange}
+              onBlur={field.onBlur}
+              name={field.name}
+            />
+          )}
         />
       </div>
 

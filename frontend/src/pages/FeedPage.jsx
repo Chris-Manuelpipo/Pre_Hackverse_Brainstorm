@@ -20,7 +20,7 @@ const FeedPage = () => {
   const filters = {
     matiere:      searchParams.get('matiere') || '',
     statut:       searchParams.get('statut') || '',
-    type_contenu: searchParams.get('type') || '',
+    type_contenu: searchParams.get('type_contenu') || searchParams.get('type') || '',
     sort:         searchParams.get('sort') || 'recent',
   };
 

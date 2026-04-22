@@ -63,6 +63,7 @@ async function findAll({ page = 1, limit = 20, matiere, statut,
     SELECT
       q.id, q.titre, q.type_contenu, q.statut, q.nb_vues,
       q.date_creation, q.niveau_etudes,
+      u.id AS auteur_id,
       u.pseudo AS auteur_pseudo, u.avatar_url AS auteur_avatar,
       u.niveau_confiance AS auteur_niveau,
       m.nom AS matiere_nom, m.icone AS matiere_icone,
@@ -106,6 +107,7 @@ async function findById(id) {
   const { rows } = await db.query(
     `SELECT
        q.id, q.auteur_id, q.matiere_id, q.titre, q.type_contenu,
+       u.id AS auteur_id,
        q.niveau_etudes, q.description, q.statut, q.nb_vues,
        q.date_creation, q.date_modification,
        u.pseudo AS auteur_pseudo, u.avatar_url AS auteur_avatar,

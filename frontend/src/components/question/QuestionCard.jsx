@@ -59,7 +59,7 @@ const QuestionCard = ({ question }) => {
               </Badge>
             )}
             <Badge variant={
-              question.statut === 'résolu' ? 'success' :
+              question.statut === 'resolu' ? 'success' :
               question.statut === 'fermé'  ? 'error'   : 'primary'
             }>
               {question.statut || 'ouvert'}
