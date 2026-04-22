@@ -47,44 +47,38 @@ async function findAll({ page = 1, limit = 20, matiere, statut,
   const params = [];
   let p = 1;
 
-  if (matiere)      { conditions.push(`m.nom ILIKE $${p++}`);           params.push(matiere); }
-  if (statut)       { conditions.push(`q.statut = $${p++}`);             params.push(statut); }
-  if (type_contenu) { conditions.push(`q.type_contenu = $${p++}`);       params.push(type_contenu); }
-  if (niveau)       { conditions.push(`q.niveau_etudes ILIKE $${p++}`);  params.push(`%${niveau}%`); }
+  if (matiere)      { conditions.push(`vfq.matiere_nom ILIKE $${p++}`);   params.push(matiere); }
+  if (statut)       { conditions.push(`vfq.statut = $${p++}`);            params.push(statut); }
+  if (type_contenu) { conditions.push(`vfq.type_contenu = $${p++}`);      params.push(type_contenu); }
+  if (niveau)       { conditions.push(`vfq.niveau_etudes ILIKE $${p++}`); params.push(`%${niveau}%`); }
 
   const orderMap = {
-    recent: 'q.date_creation DESC',
+    recent: 'vfq.date_creation DESC',
     votes:  'nb_reponses DESC',
-    vues:   'q.nb_vues DESC',
+    vues:   'vfq.nb_vues DESC',
   };
   const orderBy = orderMap[sort] || orderMap.recent;
 
   const sql = `
     SELECT
-      q.id, q.titre, q.type_contenu, q.statut, q.nb_vues,
-      q.date_creation, q.niveau_etudes,
-      u.id AS auteur_id,
-      u.pseudo AS auteur_pseudo, u.avatar_url AS auteur_avatar,
-      u.niveau_confiance AS auteur_niveau,
-      m.nom AS matiere_nom, m.icone AS matiere_icone,
-      COUNT(DISTINCT r.id) AS nb_reponses,
-      ARRAY_AGG(DISTINCT t.nom) FILTER (WHERE t.nom IS NOT NULL) AS tags
-    FROM question q
-    JOIN utilisateur u      ON u.id = q.auteur_id
-    LEFT JOIN matiere m     ON m.id = q.matiere_id
-    LEFT JOIN reponse r     ON r.question_id = q.id
-    LEFT JOIN question_tag qt ON qt.question_id = q.id
-    LEFT JOIN tag t         ON t.id = qt.tag_id
+      vfq.id, vfq.titre, vfq.type_contenu, vfq.statut, vfq.nb_vues,
+      vfq.date_creation, vfq.niveau_etudes,
+      q.auteur_id,
+      vfq.auteur_pseudo, vfq.auteur_avatar,
+      vfq.auteur_niveau,
+      vfq.matiere_nom, vfq.matiere_icone,
+      vfq.nb_reponses,
+      vfq.tags
+    FROM v_feed_questions vfq
+    JOIN question q ON q.id = vfq.id
     WHERE ${conditions.join(' AND ')}
-    GROUP BY q.id, u.pseudo, u.avatar_url, u.niveau_confiance, m.nom, m.icone
     ORDER BY ${orderBy}
     LIMIT $${p} OFFSET $${p + 1}
   `;
 
   const countSql = `
-    SELECT COUNT(DISTINCT q.id) AS total
-    FROM question q
-    LEFT JOIN matiere m ON m.id = q.matiere_id
+    SELECT COUNT(*) AS total
+    FROM v_feed_questions vfq
     WHERE ${conditions.join(' AND ')}
   `;
 
@@ -107,7 +101,6 @@ async function findById(id) {
   const { rows } = await db.query(
     `SELECT
        q.id, q.auteur_id, q.matiere_id, q.titre, q.type_contenu,
-       u.id AS auteur_id,
        q.niveau_etudes, q.description, q.statut, q.nb_vues,
        q.date_creation, q.date_modification,
        u.pseudo AS auteur_pseudo, u.avatar_url AS auteur_avatar,
@@ -120,7 +113,7 @@ async function findById(id) {
       LEFT JOIN question_tag qt ON qt.question_id = q.id
       LEFT JOIN tag t         ON t.id = qt.tag_id
       WHERE q.id = $1
-      GROUP BY q.id, u.pseudo, u.avatar_url, u.niveau_confiance, m.nom, q.titre, q.type_contenu, q.description, q.statut, q.nb_vues, q.date_creation, q.date_modification, q.matiere_id, q.niveau_etudes`,
+      GROUP BY q.id, q.auteur_id, q.matiere_id, q.titre, q.type_contenu, q.niveau_etudes, q.description, q.statut, q.nb_vues, q.date_creation, q.date_modification, u.id, u.pseudo, u.avatar_url, u.niveau_confiance, m.nom`,
     [id]
   );
   if (rows.length === 0) {
@@ -142,11 +135,11 @@ async function search({ q, page = 1, limit = 20 }) {
        q.id, q.titre, q.type_contenu, q.statut, q.date_creation,
        u.pseudo AS auteur_pseudo,
        m.nom AS matiere_nom,
-       ts_rank(q.search_vector, plainto_tsquery('french_custom', $1)) AS rank
+       ts_rank(q.search_vector, plainto_tsquery('french', $1)) AS rank
      FROM question q
      JOIN utilisateur u  ON u.id = q.auteur_id
      LEFT JOIN matiere m ON m.id = q.matiere_id
-     WHERE q.search_vector @@ plainto_tsquery('french_custom', $1)
+     WHERE q.search_vector @@ plainto_tsquery('french', $1)
      ORDER BY rank DESC
      LIMIT $2 OFFSET $3`,
     [q, limit, offset]

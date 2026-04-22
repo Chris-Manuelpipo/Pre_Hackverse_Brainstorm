@@ -591,23 +591,32 @@ BEGIN
     END IF;
 
     -- ---- Recalcul du niveau de confiance ----
-    -- Applicable à l'auteur impacté (simplifié : recalcul global si INSERT/UPDATE)
-    UPDATE utilisateur
-    SET niveau_confiance = CASE
-        WHEN points_xp >= 3000 THEN 6
-        WHEN points_xp >= 1500 THEN 5
-        WHEN points_xp >= 700  THEN 4
-        WHEN points_xp >= 300  THEN 3
-        WHEN points_xp >= 100  THEN 2
-        ELSE 1
-    END
-    WHERE id IN (
-        SELECT auteur_id FROM question WHERE id = COALESCE(NEW.id, OLD.id) LIMIT 1
-        UNION
-        SELECT auteur_id FROM reponse  WHERE id = COALESCE(NEW.id, OLD.id) LIMIT 1
-        UNION
-        SELECT COALESCE(NEW.utilisateur_id, OLD.utilisateur_id)
-    );
+    -- Cibler directement les utilisateurs affectés selon le contexte du trigger
+    IF TG_TABLE_NAME = 'question' OR TG_TABLE_NAME = 'reponse' THEN
+        UPDATE utilisateur
+        SET niveau_confiance = CASE
+            WHEN points_xp >= 3000 THEN 6
+            WHEN points_xp >= 1500 THEN 5
+            WHEN points_xp >= 700  THEN 4
+            WHEN points_xp >= 300  THEN 3
+            WHEN points_xp >= 100  THEN 2
+            ELSE 1
+        END
+        WHERE id = COALESCE(NEW.auteur_id, OLD.auteur_id);
+    ELSIF TG_TABLE_NAME = 'vote' THEN
+        UPDATE utilisateur
+        SET niveau_confiance = CASE
+            WHEN points_xp >= 3000 THEN 6
+            WHEN points_xp >= 1500 THEN 5
+            WHEN points_xp >= 700  THEN 4
+            WHEN points_xp >= 300  THEN 3
+            WHEN points_xp >= 100  THEN 2
+            ELSE 1
+        END
+        WHERE id IN (
+            SELECT auteur_id FROM reponse WHERE id = COALESCE(NEW.reponse_id, OLD.reponse_id)
+        );
+    END IF;
 
     RETURN NULL;
 END;
@@ -764,18 +773,18 @@ COMMENT ON VIEW v_notifs_non_lues IS
 -- 7. CONTRAINTES SUPPLÉMENTAIRES
 -- =============================================================================
 
--- Un utilisateur ne peut pas voter pour sa propre réponse
-ALTER TABLE vote
-    ADD CONSTRAINT ck_vote_pas_autovote
-    CHECK (
-        utilisateur_id != (
-            SELECT auteur_id FROM reponse WHERE id = reponse_id
-        )
-    );
-
--- DÉSACTIVÉ EN PRODUCTION (coûteux) — utiliser une validation côté backend
--- Si activé, s'assurer d'un index couvrant.
--- ALTER TABLE vote DROP CONSTRAINT IF EXISTS ck_vote_pas_autovote;
+-- CONTRAINTE CHECK DÉSACTIVÉE : Une requête SELECT dans un CHECK constraint
+-- est très coûteuse en performance (exécutée à chaque INSERT/UPDATE).
+-- Validation déplacée au backend (côté Node.js) pour vérifier avant insertion.
+--
+-- Si vous tenez absolument à le mettre en DB (non recommandé) :
+-- ALTER TABLE vote
+--     ADD CONSTRAINT ck_vote_pas_autovote
+--     CHECK (
+--         utilisateur_id != (
+--             SELECT auteur_id FROM reponse WHERE id = reponse_id
+--         )
+--     );
 
 
 -- =============================================================================
@@ -847,20 +856,23 @@ ON CONFLICT (nom) DO NOTHING;
 --    intégrant le dictionnaire unaccent.
 -- =============================================================================
 
--- Créer un dictionnaire unaccent+french combiné
-CREATE TEXT SEARCH DICTIONARY french_unaccent (
-    TEMPLATE  = ispell,
-    DictFile  = french,
-    AffFile   = french,
-    StopWords = french,
-    FilesDir  = '/usr/share/postgresql/tsearch_data'
-) ;
-
--- NOTE : Si le dictionnaire ispell/french n'est pas disponible,
--- utiliser la configuration simple :
--- CREATE TEXT SEARCH CONFIGURATION french_custom (COPY = pg_catalog.french);
--- ALTER  TEXT SEARCH CONFIGURATION french_custom
---   ALTER MAPPING FOR hword, hword_part, word WITH unaccent, french_stem;
+-- DICTIONNAIRE PERSONNALISÉ DÉACTIVÉ :
+-- En production (Render, AWS, etc.), le fichier ispell/french peut ne pas exister
+-- ou le chemin FilesDir peut être rejeté. Nous utilisons plutôt la config standard.
+--
+-- La fonction fn_update_search_vector() utilise :
+--   to_tsvector('french', ...) — config française native (toujours disponible)
+--   unaccent() — extension PostgreSQL standard
+-- Cette combination fonctionne sans dictionnaire personnalisé.
+--
+-- Si vous avez besoin d'une config avancée (stemming custom), décommentez :
+-- CREATE TEXT SEARCH DICTIONARY french_unaccent (
+--     TEMPLATE  = ispell,
+--     DictFile  = french,
+--     AffFile   = french,
+--     StopWords = french,
+--     FilesDir  = '/usr/share/postgresql/tsearch_data'
+-- ) ;
 
 -- Mise à jour manuelle du search_vector pour les données seeds (si besoin)
 -- UPDATE question SET search_vector = DEFAULT;
